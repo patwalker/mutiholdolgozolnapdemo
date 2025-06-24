@@ -1,19 +1,23 @@
 const mobs = [
   {
-    name: "Creeper",
-    image: "mobs/creeper.png"
+    name: "Kacsa",
+    image: "mobs/duck.png"
   },
   {
-    name: "Zombie",
+    name: "Zombi",
     image: "mobs/zombie.png"
   },
   {
-    name: "Enderman",
-    image: "mobs/enderman.png"
+    name: "Pók",
+    image: "mobs/spider.png"
   },
   {
-    name: "Skeleton",
+    name: "Csontváz",
     image: "mobs/skeleton.png"
+  },
+    {
+    name: "Farkas",
+    image: "mobs/wolf.png"
   }
 ];
 
