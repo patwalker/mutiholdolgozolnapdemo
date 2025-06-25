@@ -1,0 +1,101 @@
+{
+    "definition": {
+        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+        "contentVersion": "1.0.0.0",
+        "triggers": {
+            "When_a_HTTP_request_is_received": {
+                "type": "Request",
+                "kind": "Http"
+            }
+        },
+        "actions": {
+            "Trigger_GitHub_Action": {
+                "runAfter": {
+                    "Get_GitHub_Token": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Http",
+                "inputs": {
+                    "uri": "https://api.github.com/repos/patwalker/mutiholdolgozolnapdemo/actions/workflows/main.yml/dispatches",
+                    "method": "POST",
+                    "headers": {
+                        "Authorization": "@{concat('Bearer ', body('Get_GitHub_Token')?['value'])}",
+                        "Accept": "application/vnd.github.v3+json"
+                    },
+                    "queries": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": {
+                        "ref": "main"
+                    }
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Response_to_User": {
+                "runAfter": {
+                    "Delay_Before_Redirect": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Response",
+                "kind": "Http",
+                "inputs": {
+                    "statusCode": 200,
+                    "headers": {
+                        "Content-Type": "text/html"
+                    },
+                    "body": "<!DOCTYPE html>\n<html lang=\"hu\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta http-equiv=\"refresh\" content=\"5;url=<cél static webapp uri>\" />\n  <title>Kezdődik a Minecraft kalandod!</title>\n  <style>\n    body {\n      font-family: sans-serif;\n      display: flex;\n      flex-direction: column;\n      align-items: center;\n      justify-content: center;\n      height: 100vh;\n      background: #f5f5f5;\n      text-align: center;\n      padding: 1rem;\n    }\n    #msg {\n      font-size: 1.5rem;\n      max-width: 600px;\n    }\n  </style>\n</head>\n<body>\n  <div id=\"msg\">\n    <h1>🎮 Kezdődik a Minecraft kalandod! 🧱</h1>\n    <p>\n      📱 A QR-kód beolvasásával elindítottál egy varázslatos gépezetet a felhőben. 🌩️<br><br>\n      🧠 Képzeld el úgy, mintha a LEGO kockáid 🧱 nem a polcodon lennének, hanem egy hatalmas, láthatatlan dobozban a neten 🌐.<br><br>\n      🤖 Amikor beolvastad a kódot, megkértél egy láthatatlan építőrobotot 🤖, hogy ezekből a kockákból gyorsan építsen fel neked egy saját világot 🌍.<br><br>\n      🛠️ Most épp ezt építi – pár pillanat és készen lesz! ⏳<br><br>\n      🔄 Hamarosan automatikusan továbbirányítunk a Minecraft témájú alkalmazásodra! 🚀✨\n    </p>\n  </div>\n</body>\n</html>"
+                }
+            },
+            "Get_GitHub_Token": {
+                "runAfter": {},
+                "type": "Http",
+                "inputs": {
+                    "uri": "<your-keyvault-secret-uri>?api-version=7.4",
+                    "method": "GET",
+                    "authentication": {
+                        "type": "ManagedServiceIdentity",
+                        "audience": "cfa8b339-82a2-471a-a3c9-0fc0be7a4093"
+                    }
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                }
+            },
+            "Delay_Before_Redirect": {
+                "runAfter": {
+                    "Trigger_GitHub_Action": [
+                        "Succeeded"
+                    ]
+                },
+                "type": "Wait",
+                "inputs": {
+                    "interval": {
+                        "count": 1,
+                        "unit": "Minute"
+                    }
+                }
+            }
+        },
+        "outputs": {},
+        "parameters": {
+            "$connections": {
+                "type": "Object",
+                "defaultValue": {}
+            }
+        }
+    },
+    "parameters": {
+        "$connections": {
+            "type": "Object",
+            "value": {}
+        }
+    }
+}
